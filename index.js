@@ -16,49 +16,58 @@ const wallet2 = new Wallet(PRIVATE_KEY_2, provider);
 const wallet3 = new Wallet(PRIVATE_KEY_3, provider);
 
 (async () => {
-//   console.log(
-//     "balance wallet1: ",
-//     utils.formatEther(await wallet1.getBalance())
-//   );
-//   console.log(
-//     "balance wallet2: ",
-//     utils.formatEther(await wallet2.getBalance())
-//   );
-//   console.log(
-//     "balance wallet3: ",
-//     utils.formatEther(await wallet3.getBalance())
-//   );
-
-  const tx0 = await wallet1.sendTransaction({
-      value: utils.parseEther(".5"),
-      to: wallet2.address,
-  })
-  const tx1 = await wallet1.sendTransaction({
-      value: utils.parseEther(".5"),
-      to: wallet2.address,
-  })
-
-  const tx2 = await wallet1.sendTransaction({
-      value: utils.parseEther("5"),
-      to: wallet2.address,
-  })
-
-//   await payroll(0.3, wallet1, [wallet2.address, wallet3.address]);
-
-await getAddress(wallet1.address)
-
   console.log(
-    "after balance wallet1: ",
+    "balance wallet1: ",
     utils.formatEther(await wallet1.getBalance())
   );
   console.log(
-    "after balance wallet2: ",
+    "balance wallet2: ",
     utils.formatEther(await wallet2.getBalance())
   );
   console.log(
-    "after balance wallet3: ",
+    "balance wallet3: ",
     utils.formatEther(await wallet3.getBalance())
   );
+
+  const tx0 = await wallet1.sendTransaction({
+    value: utils.parseEther(".5"),
+    to: wallet2.address,
+  });
+  const tx1 = await wallet1.sendTransaction({
+    value: utils.parseEther(".5"),
+    to: wallet2.address,
+  });
+
+  const tx2 = await wallet1.sendTransaction({
+    value: utils.parseEther("5"),
+    to: wallet2.address,
+  });
+
+  await payroll(0.3, wallet1, [wallet2.address, wallet3.address]);
+
+  //   await getAddress(wallet1.address);
+
+  //   console.log(
+  //     "after balance wallet1: ",
+  //     utils.formatEther(await wallet1.getBalance())
+  //   );
+  //   console.log(
+  //     "after balance wallet2: ",
+  //     utils.formatEther(await wallet2.getBalance())
+  //   );
+  //   console.log(
+  //     "after balance wallet3: ",
+  //     utils.formatEther(await wallet3.getBalance())
+  //   );
+
+  console.log("Transactions involving wallet1:");
+  await getAddress(wallet1.address);
+
+  console.log("Transactions involving wallet2:");
+  await getAddress(wallet2.address);
+
+  console.log("Transactions involving wallet3:");
+  await getAddress(wallet3.address);
 })();
 
 // TODO
@@ -112,9 +121,14 @@ async function payroll(amount, sender, employees) {
 }
 
 async function getAddress(address) {
-  const block = await provider.getBlockNumber();
-  const blockWithTransactions = provider.getBlockWithTransactions(block);
-  console.log("runing transaction address", blockWithTransactions);
+  const blockNumber = await provider.getBlockNumber();
+  const block = await provider.getBlockWithTransactions(blockNumber);
+
+  const transactionsInvolvingAddress = block.transactions.filter(
+    (tx) => tx.from === address || tx.to === address
+  );
+
+  console.log("Transactions involving address", transactionsInvolvingAddress);
 }
 
 // function findAddresses(address) return list of addresses
